@@ -49,3 +49,7 @@ if __name__ == '__main__':
         server.serve_forever()
     except KeyboardInterrupt:
         server.shutdown()
+
+
+# /hello?name=zhangsong   => hello zhangsong
+# /                       => hello world

@@ -3,6 +3,8 @@
 
 from webob import Request, Response   # pip安装webob模块
 from webob.dec import wsgify          #下面需要用到wsgify装饰器
+from webob import exc                 #导入exc模块，目的是用于以下直接返回HTTP状态码
+
 
 def hello(request: Request) -> Response:    #定义函数hello,
     name = request.params.get("name", 'anonymous')
@@ -20,14 +22,14 @@ class Application:
 
     @classmethod                                                #用classmethod装饰器，方便下面直接通过 类.方法 调用
     def register(cls, path, handler):
-        cls.ROUTER[path] = handler
-
-    def default_hander(self, request: Request) -> Response:
-        return Response(body='not found', status=404)
+        cls.ROUTER[path] = handler                              #path作为key  handler作为value
 
     @wsgify
     def __call__(self, request: Request) -> Response:               #用__call__方法，方便之后调用
-        return self.ROUTER.get(request.path, self.default_hander)(request)
+        try:
+            return self.ROUTER[request.path](request)
+        except KeyError:
+            raise exc.HTTPNotFound('not found')                     #返回错误信息
 
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
@@ -41,6 +43,10 @@ if __name__ == '__main__':
         server.serve_forever()
     except KeyboardInterrupt:
         server.shutdown()
+
+
+# /hello?name=zhangsong   => hello zhangsong
+# /                       => hello world
 
 
 

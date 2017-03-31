@@ -25,13 +25,17 @@ def application(request: Request) -> Response:
     return router.get(request.path, index)(request)     #返回静态路由访问到的函数
 
 if __name__ == '__main__':
-    from  wsgiref.simple_server import make_server
+    from wsgiref.simple_server import make_server
 
     server = make_server('0.0.0.0', 8888, application)      #定义bind的IP、端口、
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         server.shutdown()
+
+
+# /hello?name=zhangsong   => hello zhangsong
+# /                       => hello world
 
 
 
